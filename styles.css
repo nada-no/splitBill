@@ -1,4 +1,100 @@
+body>div {
+    max-width: 800px;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'DM Sans', Helvetica, sans-serif;
+    color: white;
+}
+
+/* HOME */
+#home {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #333333;
+    text-align: center;
+    color: #14CC92;
+}
+
+#home h1 {
+    font-size: 50px;
+    margin-top: 30vh;
+    font-family: 'Ivar Text', 'Georgia', serif;
+}
+
+/* ADD EXPENSE VIEW */
+#closeExpVw {
+    float: right;
+    display: block;
+    cursor: pointer;
+}
+
+input {
+    width: 99.5%;
+    height: 27px;
+    border-radius: 10px;
+    border: none;
+}
+
+#addExpenseView div{
+    height: 20px;
+}
+
+/* GENERAL STYLES */
+.centered {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .hidden {
-    display:none;
-    background-color: red;
+    display: none;
+}
+
+.bgOrange {
+    background-color: #333333;
+}
+
+.rounded {
+    border-radius: 10px;
+}
+
+.padding10 {
+    padding: 20px;
+}
+
+.heigth100 {
+    height: 90vh;
+    margin-top: 3vh;
+}
+
+.mb1 {
+    margin-bottom: 5px;
+}
+
+.mb2 {
+    margin-bottom: 10px;
+}
+
+.mb3 {
+    margin-bottom: 15px;
+}
+
+.pb1 {
+    margin-bottom: 5px;
+}
+
+button {
+    width: 100%;
+    background-color: #14CC92;
+    color: white;
+    height: 40px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
 }

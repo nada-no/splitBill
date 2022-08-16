@@ -1,27 +1,47 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Hello</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <script src="webxdc.js"></script>
-    <script src="splitBill.js"></script>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <h1>Split Bill</h1>
-    <div id="appContainer">
-      <!-- STARTING PAGE -->
+
+<head>
+  <title>Hello</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="centered">
+    <div id="appContainer" class="bgOrange rounded padding10 heigth100">
+      <!-- LOADING PAGE -->
+      <div id="home">
+        <!-- <button id="join">View expenses</button> -->
+        <h1>Split Bill</h1>
+        <p>Loading...</p>
+      </div>
+      <!-- RESULTS PAGE -->
       <div id="resultsView">
-        <button id="toAddExp">Add expense</button>
-        <div id="pplForm"></div>
+        <button id="toAddExp" class="centered rounded">Add expense</button>
+        <div id="results"></div>
       </div>
       <!-- ADD EXPENSE PAGE -->
       <div id="addExpenseView">
-        <input type="text" id="amount" />
+        <div>
+          <span id="closeExpVw"><svg id='i-close' viewBox='0 0 32 32' width='20' height='20' fill='none'
+              stroke='currentcolor' stroke-linecap='round' stroke-linejoin='round' stroke-width='4'>
+              <path d='M2 30 L30 2 M30 30 L2 2' />
+            </svg></span>
+        </div>
+        <label for="amount" class="pb1">Amount: </label>
+        <input type="text" id="amount" name="concept"  class="mb3"/>
+        <label for="concept" class="pb1">Concept: </label>
+        <input type="text" id="concept" name="concept"  class="mb3"/>
         <!-- <p>Divide between:</p> -->
-        <button id="addExpBtn">calculate</button>
+        <p id="errorInp"></p>
+        <button id="addExpBtn" class="rounded">calculate</button>
       </div>
     </div>
-  </body>
+  </div>
+  <script src="webxdc.js"></script>
+  <script src="splitBill.js"></script>
+</body>
+
 </html>
