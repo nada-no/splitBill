@@ -55,6 +55,7 @@ var sb = {
         //list debts
         sb.results.innerHTML = "";
         for (const person of sb.participants) {
+            let labelContainer = document.createElement("div");
             let label = document.createElement("p");
             let debt = 0;
             //calculate the amount of money every person owes
@@ -64,7 +65,12 @@ var sb = {
                 }
             );
             label.textContent = person.name + " owes " + debt + " in total.";
-            sb.results.appendChild(label);
+            labelContainer.appendChild(label);
+            labelContainer.setAttribute("id-data", person.name);
+            labelContainer.addEventListener("click", (el) => {
+                sb.showDebts(el.currentTarget.getAttribute("id-data"));
+            });
+            sb.results.appendChild(labelContainer);
         }
     },
 
@@ -117,6 +123,30 @@ var sb = {
                 info
             );
             sb.list();
+        }
+    },
+
+    //show a user's debts
+    showDebts: (name) => {
+        //get the debts
+        let payees = [];
+        let totalDebt = 0;
+        let container = document.querySelector(`[id-data="${name}"]`);
+        const { debts } = sb.participants.find((el) => {
+            return el.name === name;
+        });
+
+        for (const debt of debts) {
+            if (!payees.includes(debt.payee)) payees.push(debt.payee);
+        }
+
+        for(const person of payees) {
+            debts.forEach((el)=>{
+                if(el.payee === person) totalDebt += el.amount;
+            });
+            let payee = document.createElement("p");
+            payee.textContent = "\t" + totalDebt + "€ to " + person;
+            container.appendChild(payee);
         }
     },
 
