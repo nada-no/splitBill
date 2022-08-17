@@ -36,9 +36,10 @@ var sb = {
                 sb.participants.push({ name: update.payload.name, debts: [] });
             } else if (update.payload.type === "expense") {
                 //divide the expense between the people
-                let amountPP = update.payload.amount / sb.participants.length;
+                    let amountPP = update.payload.amount / sb.participants.length;
+                    amountPP = Number.parseFloat(amountPP.toFixed(2));
                 sb.participants.forEach((person) => {
-                    if (person.name != update.payload.payer) person.debts.push({ payee: update.payload.payer, amount: amountPP });
+                    if (person.name != update.payload.payer) person.debts.push({ payee: update.payload.payer, amount: amountPP, payers: update.payload.payers });
                 });
             }
             sb.list();
@@ -67,10 +68,11 @@ var sb = {
             label.textContent = person.name + " owes " + debt + " in total.";
             labelContainer.appendChild(label);
             labelContainer.setAttribute("id-data", person.name);
-            labelContainer.addEventListener("click", (el) => {
-                sb.showDebts(el.currentTarget.getAttribute("id-data"));
-            });
+            // labelContainer.addEventListener("click", (el) => {
+            //     sb.showDebts(el.currentTarget.getAttribute("id-data"));
+            // });
             sb.results.appendChild(labelContainer);
+            sb.showDebts(person.name);
         }
     },
 
@@ -108,6 +110,7 @@ var sb = {
             sb.errorInp.classList.add("hidden");
 
             let info = window.webxdc.selfName + " added a " + amount + "€ expense";
+            let payers = sb.participants.map(el => el.name);
             //send an update
             window.webxdc.sendUpdate(
                 {
@@ -116,7 +119,7 @@ var sb = {
                         type: "expense",
                         concept: concept,
                         amount: amount,
-                        // participants: 
+                        payers: payers,
                     },
                     info
                 },
@@ -132,6 +135,7 @@ var sb = {
         let payees = [];
         let totalDebt = 0;
         let container = document.querySelector(`[id-data="${name}"]`);
+        let ul = document.createElement("ul");
         const { debts } = sb.participants.find((el) => {
             return el.name === name;
         });
@@ -140,20 +144,24 @@ var sb = {
             if (!payees.includes(debt.payee)) payees.push(debt.payee);
         }
 
-        for(const person of payees) {
-            debts.forEach((el)=>{
-                if(el.payee === person) totalDebt += el.amount;
+        for (const person of payees) {
+            debts.forEach((el) => {
+                if (el.payee === person) totalDebt += el.amount;
             });
-            let payee = document.createElement("p");
-            payee.textContent = "\t" + totalDebt + "€ to " + person;
-            container.appendChild(payee);
+            let payee = document.createElement("li");
+            payee.textContent = totalDebt + "€ to " + person;
+            ul.appendChild(payee);
         }
+        container.appendChild(ul);
     },
 
     //open add expense screen
     openAddExp: () => {
         sb.resultsVw.classList.add("hidden");
         sb.addExpVw.classList.remove("hidden");
+        //show checkboxes of participants
+        // TODO
+
     },
 
     //hide all views
