@@ -53,7 +53,8 @@ var sb = {
                 sb.expenses.push({
                     concept: update.payload.concept,
                     amount: update.payload.amount,
-                    participants: update.payload.payees
+                    participants: update.payload.payees,
+                    date: update.payload.date,
                 });
                 //divide the expense between the people
                 let amountPP = update.payload.amount / sb.participants.length;
@@ -153,6 +154,7 @@ var sb = {
                         concept: concept,
                         amount: amount,
                         payees: payees,
+                        date: Date.now(),
                     },
                     info
                 },
@@ -181,13 +183,22 @@ var sb = {
 
         if (sb.expenses.length == 0) {
             let p = document.createElement("p");
-                p.textContent = "There's no expenses yet";
-                sb.expList.appendChild(p);
+            p.textContent = "There's no expenses yet";
+            sb.expList.appendChild(p);
         } else {
             for (const exp of sb.expenses) {
-                let p = document.createElement("p");
-                p.textContent = exp.concept + " - " + exp.amount;
-                sb.expList.appendChild(p);
+                let div = document.createElement("div");
+                let amt = document.createElement("p");
+                let conc = document.createElement("p");
+                let arrow = document.createElement("span");
+                div.classList.add("expense");
+                conc.textContent = exp.concept;
+                amt.textContent = exp.amount + "€";
+                arrow.innerHTML = "<svg id='i-chevron-bottom' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='20' height='20' fill='none' stroke='currentcolor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'><path d='M30 12 L16 24 2 12' /></svg>";
+                div.appendChild(conc);
+                div.appendChild(amt);
+                div.appendChild(arrow);
+                sb.expList.appendChild(div);
             }
         }
     },

@@ -89,6 +89,14 @@ input {
     margin-bottom: 5px;
 }
 
+.expense {
+    display: flex;
+    justify-content: space-evenly;
+    border: solid 2px #14CC92;
+    margin: 10px;
+    border-radius: 10px;
+}
+
 button {
     width: 100%;
     background-color: #14CC92;
