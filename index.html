@@ -19,7 +19,8 @@
       </div>
       <!-- RESULTS PAGE -->
       <div id="resultsView">
-        <button id="toAddExp" class="centered rounded">Add expense</button>
+        <button id="toExpList" class="centered rounded mb3">View all expenses</button>
+        <button id="toAddExp" class="centered rounded mb3">Add expense</button>
         <div id="results"></div>
       </div>
       <!-- ADD EXPENSE PAGE -->
@@ -31,16 +32,27 @@
             </svg></span>
         </div>
         <label for="amount" class="pb1">Amount: </label>
-        <input type="text" id="amount" name="concept"  class="mb3"/>
+        <input type="text" id="amount" name="concept" class="mb3" />
         <label for="concept" class="pb1">Concept: </label>
-        <input type="text" id="concept" name="concept"  class="mb3"/>
+        <input type="text" id="concept" name="concept" class="mb3" />
         <!-- <p>Divide between:</p> -->
         <p id="errorInp"></p>
         <button id="addExpBtn" class="rounded">calculate</button>
       </div>
+      <!-- ALL EXPENSES PAGE -->
+      <div id="allExpensesView">
+        <div>
+          <span id="closeExpListVw"><svg id='i-close' viewBox='0 0 32 32' width='20' height='20' fill='none'
+              stroke='currentcolor' stroke-linecap='round' stroke-linejoin='round' stroke-width='4'>
+              <path d='M2 30 L30 2 M30 30 L2 2' />
+            </svg></span>
+        </div>
+        <div id="expensesList"></div>
+      </div>
     </div>
   </div>
   <script src="webxdc.js"></script>
+  <script src="calculations.js"></script>
   <script src="splitBill.js"></script>
 </body>
 

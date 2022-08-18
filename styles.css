@@ -28,7 +28,7 @@ body {
 }
 
 /* ADD EXPENSE VIEW */
-#closeExpVw {
+#closeExpVw, #closeExpListVw {
     float: right;
     display: block;
     cursor: pointer;
@@ -41,8 +41,8 @@ input {
     border: none;
 }
 
-#addExpenseView div{
-    height: 20px;
+#addExpenseView div, #allExpensesView div{
+    min-height: 20px;
 }
 
 /* GENERAL STYLES */
