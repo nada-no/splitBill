@@ -19,8 +19,8 @@
       </div>
       <!-- RESULTS PAGE -->
       <div id="resultsView">
-        <button id="toExpList" class="centered rounded mb3">View all expenses</button>
-        <button id="toAddExp" class="centered rounded mb3">Add expense</button>
+        <button id="toExpList" class="centered mb3">View all expenses</button>
+        <button id="toAddExp" class="centered mb3">Add expense</button>
         <div id="results"></div>
       </div>
       <!-- ADD EXPENSE PAGE -->
@@ -37,7 +37,7 @@
         <input type="text" id="concept" name="concept" class="mb3" />
         <!-- <p>Divide between:</p> -->
         <p id="errorInp"></p>
-        <button id="addExpBtn" class="rounded">calculate</button>
+        <button id="addExpBtn">calculate</button>
       </div>
       <!-- ALL EXPENSES PAGE -->
       <div id="allExpensesView">
@@ -48,6 +48,11 @@
             </svg></span>
         </div>
         <div id="expensesList"></div>
+        <div id="confirmation" class="hidden">
+          <h3>Do you really want to delete this expense?</h3>
+          <button id="confYes">Yes</button>
+          <button id="confNo">No</button>
+        </div>
       </div>
     </div>
   </div>

@@ -46,9 +46,9 @@ var sb = {
 
         //UPDATE LISTENER new users & expenses
         window.webxdc.setUpdateListener(function (update) {
-            if (update.payload.type === "addUser") {
+            if (update.payload.type === "addUser") { // USER ADDITION
                 sb.participants.push({ name: update.payload.name, debts: {}, paid: 0 });
-            } else if (update.payload.type === "expense") {
+            } else if (update.payload.type === "expense") { // EXPENSE ADDITION
                 //store the expense
                 sb.expenses.push({
                     concept: update.payload.concept,
@@ -64,9 +64,22 @@ var sb = {
                     paidFor[element] = amountPP;
                 });
                 sb.debts.push({
+                    date: update.payload.date,
+                    concept: update.payload.concept,
                     paidBy: update.payload.payer,
                     paidFor: paidFor,
                 });
+            } else if (update.payload.type == "deletion") { //  EXPENSE DELETION
+                //delete expense
+                let index = sb.expenses.findIndex((obj) => {
+					return obj.date === update.payload.date && obj.concept === update.payload.concept;
+				});
+				if (index != -1) sb.expenses.splice(index, 1);
+                //delete debts
+                 index = sb.debts.findIndex((obj) => {
+					return obj.date === update.payload.date && obj.concept === update.payload.concept;
+				});
+				if (index != -1) sb.debts.splice(index, 1);
             }
             sb.list();
         });
@@ -187,18 +200,80 @@ var sb = {
             sb.expList.appendChild(p);
         } else {
             for (const exp of sb.expenses) {
+                //create elements
+                let expense = document.createElement("div");
                 let div = document.createElement("div");
                 let amt = document.createElement("p");
                 let conc = document.createElement("p");
                 let arrow = document.createElement("span");
+                let date = document.createElement("p");
+                let details = document.createElement("div");
+                let deleteBtn = document.createElement("button");
+                let confirmation = document.querySelector("#confirmation");
+                let confYes = document.querySelector("#confYes");
+                let confNo = document.querySelector("#confYes");
+                let dateString = new Date(exp.date);
+                let amount = exp.amount / exp.participants.length;
+                
+
+                //create the expense "header"
                 div.classList.add("expense");
+                details.classList.add("details");
+                date.textContent = dateString.getDate() + "/" + dateString.getMonth() + "/" + dateString.getFullYear();
                 conc.textContent = exp.concept;
                 amt.textContent = exp.amount + "€";
+                arrow.setAttribute("id-data", exp.date);
                 arrow.innerHTML = "<svg id='i-chevron-bottom' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='20' height='20' fill='none' stroke='currentcolor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'><path d='M30 12 L16 24 2 12' /></svg>";
+                arrow.onclick = (ev) => {
+                    if (ev.currentTarget.parentElement.nextSibling.classList.contains("hidden")) {
+                        ev.currentTarget.parentElement.nextSibling.classList.remove("hidden");
+                        ev.currentTarget.innerHTML= '<svg id="i-chevron-top" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="20" height="20" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M30 20 L16 8 2 20" /></svg>'
+                    } else {
+                        ev.currentTarget.parentElement.nextSibling.classList.add("hidden");
+                        arrow.innerHTML = "<svg id='i-chevron-bottom' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='20' height='20' fill='none' stroke='currentcolor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'><path d='M30 12 L16 24 2 12' /></svg>";
+                    }
+
+                };
+
+                //append the details
+                for (const part of exp.participants) {
+                    let participant = document.createElement("p");
+                    participant.textContent = part + " owes " + amount.toFixed(2) + "€";
+                    details.appendChild(participant);
+                }
+                //append the buttons and the confirmation dialog
+                deleteBtn.innerHTML = "Delete Expense";
+                deleteBtn.onclick = () => {
+                    
+
+                    window.webxdc.sendUpdate(
+                        {
+                            payload: {
+                                deleter: window.webxdc.selfName,
+                                type: "deletion",
+                                concept: exp.concept,
+                                amount: amount,
+                                date:exp.date,
+                            }
+                            
+                        }
+                        
+                    );
+                };
+                details.classList.add("m2");
+                details.appendChild(deleteBtn);
+                details.classList.add("hidden");
+
+
+                //append all the elements
+                div.appendChild(date);
                 div.appendChild(conc);
                 div.appendChild(amt);
                 div.appendChild(arrow);
-                sb.expList.appendChild(div);
+                expense.appendChild(div);
+                expense.appendChild(details);
+                
+                sb.expList.appendChild(expense);
             }
         }
     },
