@@ -31,11 +31,23 @@
               <path d='M2 30 L30 2 M30 30 L2 2' />
             </svg></span>
         </div>
-        <label for="amount" class="pb1">Amount: </label>
-        <input type="text" id="amount" name="concept" class="mb3" />
-        <label for="concept" class="pb1">Concept: </label>
-        <input type="text" id="concept" name="concept" class="mb3" />
-        <!-- <p>Divide between:</p> -->
+        <fieldset class="addExpFieldset mb4">
+          <label for="amount" class="pb1">Amount</label>
+          <input type="text" id="amount" name="concept" class="mb3" />
+        </fieldset>
+        <fieldset class="addExpFieldset mb4">
+          <label for="concept" class="pb1">Concept</label>
+          <input type="text" id="concept" name="concept" class="mb3" />
+        </fieldset>
+
+        <p>Everybody pays</p>
+        <label class="switch">
+          <input type="checkbox" id="particInp">
+          <span class="slider round"></span>
+        </label>
+
+        <div id="partList"></div>
+
         <p id="errorInp"></p>
         <button id="addExpBtn">calculate</button>
       </div>

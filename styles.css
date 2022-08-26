@@ -35,17 +35,118 @@ body {
     cursor: pointer;
 }
 
-input {
-    width: 99.5%;
-    height: 27px;
-    border-radius: 10px;
-    border: none;
-}
-
 #addExpenseView div,
 #allExpensesView div {
     min-height: 20px;
 }
+
+.addExpFieldset {
+    border: none;
+    padding: 0;
+    position: relative;
+}
+
+.addExpFieldset.focus label {
+    color: #14CC92;
+    font-weight: bold;
+}
+
+.addExpFieldset.float label {
+    font-size: 12px;
+    top: -10px;
+}
+
+.addExpFieldset.focus input {
+    border-bottom: solid 2px #14CC92;
+}
+
+.addExpFieldset label {
+    position: absolute;
+    top: 8px;
+    transition: all 0.2s ease;
+    font-size: 20px;
+    color: white;
+}
+
+.addExpFieldset input {
+    width: 99.5%;
+    height: 27px;
+    border: none;
+    outline: none;
+    border-bottom: solid 1px white;
+    background-color: transparent;
+    color: white;
+    font-size: 20px;
+}
+
+.partListItem {
+    display: flex;
+    justify-content: space-between;
+}
+
+.partListItem p {
+    display: inline-block;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+  }
+  
+  .switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  input:checked + .slider {
+    background-color: #14CC92;
+  }
+  
+  input:focus + .slider {
+    box-shadow: 0 0 1px #14CC92;
+  }
+  
+  input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+  
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+  
+  .slider.round:before {
+    border-radius: 50%;
+  }
 
 /* CONFIRMATION */
 #confirmation {
@@ -94,6 +195,10 @@ input {
 
 .mb3 {
     margin-bottom: 15px;
+}
+
+.mb4 {
+    margin-bottom: 20px;
 }
 
 .pb1 {

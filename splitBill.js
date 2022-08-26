@@ -7,8 +7,10 @@ var sb = {
     closeExpVw: null,
     closeExpListVw: null,
     expList: null,
+    partList: null,
     conceptInp: null,
     amountInp: null,
+    particInp: null,
     errorInp: null,
     addExpBtn: null,
     toAddExp: null,
@@ -36,6 +38,8 @@ var sb = {
         sb.conceptInp = document.getElementById("concept");
         sb.errorInp = document.getElementById("errorInp");
         sb.errorInp.classList.add("hidden");
+        sb.particInp = document.getElementById("particInp");
+        sb.partList = document.getElementById("partList");
         sb.addExpBtn = document.getElementById("addExpBtn");
         sb.addExpBtn.onclick = sb.addExp;
         sb.toAddExp = document.getElementById("toAddExp");
@@ -72,14 +76,14 @@ var sb = {
             } else if (update.payload.type == "deletion") { //  EXPENSE DELETION
                 //delete expense
                 let index = sb.expenses.findIndex((obj) => {
-					return obj.date === update.payload.date && obj.concept === update.payload.concept;
-				});
-				if (index != -1) sb.expenses.splice(index, 1);
+                    return obj.date === update.payload.date && obj.concept === update.payload.concept;
+                });
+                if (index != -1) sb.expenses.splice(index, 1);
                 //delete debts
-                 index = sb.debts.findIndex((obj) => {
-					return obj.date === update.payload.date && obj.concept === update.payload.concept;
-				});
-				if (index != -1) sb.debts.splice(index, 1);
+                index = sb.debts.findIndex((obj) => {
+                    return obj.date === update.payload.date && obj.concept === update.payload.concept;
+                });
+                if (index != -1) sb.debts.splice(index, 1);
             }
             sb.list();
         });
@@ -181,8 +185,48 @@ var sb = {
     openAddExp: () => {
         sb.resultsVw.classList.add("hidden");
         sb.addExpVw.classList.remove("hidden");
-        //show checkboxes of participants
-        // TODO
+        //clear the inputs and add animations
+        sb.amountInp.value = "";
+        sb.conceptInp.value = "";
+        sb.amountInp.parentElement.classList.remove("focus", "float");
+        sb.conceptInp.parentElement.classList.remove("focus", "float");
+
+        sb.amountInp.onfocus = (ev) => {
+            ev.currentTarget.parentElement.classList.add("focus", "float");
+        };
+        sb.conceptInp.onfocus = (ev) => {
+            ev.currentTarget.parentElement.classList.add("focus", "float");
+        };
+        sb.amountInp.onblur = (ev) => {
+            if (!sb.amountInp.value) {
+                ev.currentTarget.parentElement.classList.remove("focus", "float");
+            } else {
+                ev.currentTarget.parentElement.classList.remove("focus");
+            }
+        };
+        sb.conceptInp.onblur = (ev) => {
+            if (sb.conceptInp.value == "") {
+                ev.currentTarget.parentElement.classList.remove("focus", "float");
+            } else {
+                ev.currentTarget.parentElement.classList.remove("focus");
+            }
+        };
+
+        //add the participants list
+        for(const person of sb.participants) {
+            let div = document.createElement("div");
+            div.setAttribute("class","partListItem")
+            let name = document.createElement("p");
+            let check = document.createElement("input");
+
+            name.textContent = person.name;
+            div.appendChild(name);
+            
+            check.setAttribute("type","checkbox");
+            check.setAttribute("checked", "true");
+            div.appendChild(check);
+            sb.partList.appendChild(div);
+        }
 
     },
 
@@ -214,7 +258,7 @@ var sb = {
                 let confNo = document.querySelector("#confYes");
                 let dateString = new Date(exp.date);
                 let amount = exp.amount / exp.participants.length;
-                
+
 
                 //create the expense "header"
                 div.classList.add("expense");
@@ -227,7 +271,7 @@ var sb = {
                 arrow.onclick = (ev) => {
                     if (ev.currentTarget.parentElement.nextSibling.classList.contains("hidden")) {
                         ev.currentTarget.parentElement.nextSibling.classList.remove("hidden");
-                        ev.currentTarget.innerHTML= '<svg id="i-chevron-top" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="20" height="20" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M30 20 L16 8 2 20" /></svg>'
+                        ev.currentTarget.innerHTML = '<svg id="i-chevron-top" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="20" height="20" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M30 20 L16 8 2 20" /></svg>'
                     } else {
                         ev.currentTarget.parentElement.nextSibling.classList.add("hidden");
                         arrow.innerHTML = "<svg id='i-chevron-bottom' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='20' height='20' fill='none' stroke='currentcolor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'><path d='M30 12 L16 24 2 12' /></svg>";
@@ -244,7 +288,7 @@ var sb = {
                 //append the buttons and the confirmation dialog
                 deleteBtn.innerHTML = "Delete Expense";
                 deleteBtn.onclick = () => {
-                    
+
 
                     window.webxdc.sendUpdate(
                         {
@@ -253,11 +297,11 @@ var sb = {
                                 type: "deletion",
                                 concept: exp.concept,
                                 amount: amount,
-                                date:exp.date,
+                                date: exp.date,
                             }
-                            
+
                         }
-                        
+
                     );
                 };
                 details.classList.add("m2");
@@ -272,7 +316,7 @@ var sb = {
                 div.appendChild(arrow);
                 expense.appendChild(div);
                 expense.appendChild(details);
-                
+
                 sb.expList.appendChild(expense);
             }
         }
