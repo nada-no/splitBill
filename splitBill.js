@@ -1,5 +1,6 @@
 var sb = {
     participants: [],
+    payees: [],
     addExpVw: null,
     resultsVw: null,
     homeVw: null,
@@ -39,6 +40,9 @@ var sb = {
         sb.errorInp = document.getElementById("errorInp");
         sb.errorInp.classList.add("hidden");
         sb.particInp = document.getElementById("particInp");
+        sb.particInp.onclick = () => {
+            sb.partList.classList.contains("hidden") ? sb.partList.classList.remove("hidden") : sb.partList.classList.add("hidden");
+        };
         sb.partList = document.getElementById("partList");
         sb.addExpBtn = document.getElementById("addExpBtn");
         sb.addExpBtn.onclick = sb.addExp;
@@ -55,13 +59,14 @@ var sb = {
             } else if (update.payload.type === "expense") { // EXPENSE ADDITION
                 //store the expense
                 sb.expenses.push({
+                    payer: update.payload.payer,
                     concept: update.payload.concept,
                     amount: update.payload.amount,
                     participants: update.payload.payees,
                     date: update.payload.date,
                 });
                 //divide the expense between the people
-                let amountPP = update.payload.amount / sb.participants.length;
+                let amountPP = update.payload.amount / (update.payload.payees.length+1);
                 amountPP = Number.parseFloat(amountPP.toFixed(2));
                 let paidFor = {};
                 update.payload.payees.forEach(element => {
@@ -159,9 +164,16 @@ var sb = {
 
             let info = window.webxdc.selfName + " added a " + amount + "€ expense";
             let payees = [];
-            sb.participants.forEach(el => {
-                if (el.name !== window.webxdc.selfName) payees.push(el.name);
-            });
+            //split between everybody or only some people?
+            if (sb.particInp.checked) {
+                sb.participants.forEach(el => {
+                    if (el.name !== window.webxdc.selfName) payees.push(el.name);
+                });
+            } else {
+                sb.payees.forEach(el=>{
+                    if(el.checked) payees.push(el.value);
+                });
+            }
             //send an update
             window.webxdc.sendUpdate(
                 {
@@ -213,21 +225,29 @@ var sb = {
         };
 
         //add the participants list
-        for(const person of sb.participants) {
+        sb.payees = [];
+        sb.partList.innerHTML="";
+        for (const person of sb.participants) {
+            if(person.name === window.webxdc.selfName) continue;
             let div = document.createElement("div");
-            div.setAttribute("class","partListItem")
+            div.setAttribute("class", "partListItem")
             let name = document.createElement("p");
             let check = document.createElement("input");
 
             name.textContent = person.name;
             div.appendChild(name);
-            
-            check.setAttribute("type","checkbox");
-            check.setAttribute("checked", "true");
+
+            check.setAttribute("type", "checkbox");
+            check.setAttribute("value", person.name);
+            sb.payees.push(check); //add to the payees array to check if checked in the future
             div.appendChild(check);
             sb.partList.appendChild(div);
         }
-
+        sb.particInp.checked = true;
+        sb.payees.forEach((el)=>{
+            el.checked = false;
+        });
+        sb.partList.classList.add("hidden");
     },
 
     //open and display exp list
@@ -257,7 +277,7 @@ var sb = {
                 let confYes = document.querySelector("#confYes");
                 let confNo = document.querySelector("#confYes");
                 let dateString = new Date(exp.date);
-                let amount = exp.amount / exp.participants.length;
+                let amount = exp.amount / (exp.participants.length +1 );
 
 
                 //create the expense "header"
@@ -282,7 +302,7 @@ var sb = {
                 //append the details
                 for (const part of exp.participants) {
                     let participant = document.createElement("p");
-                    participant.textContent = part + " owes " + amount.toFixed(2) + "€";
+                    participant.textContent = part + " owes " + amount.toFixed(2) + "€ to " + exp.payer;
                     details.appendChild(participant);
                 }
                 //append the buttons and the confirmation dialog

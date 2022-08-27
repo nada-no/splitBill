@@ -81,12 +81,14 @@ body {
 
 .partListItem {
     display: flex;
-    justify-content: space-between;
+    /* justify-content: space-between; */
+    justify-content: space-evenly;
 }
 
 .partListItem p {
     display: inline-block;
 }
+
 
 .switch {
     position: relative;
@@ -138,15 +140,23 @@ body {
     -ms-transform: translateX(26px);
     transform: translateX(26px);
   }
-  
-  /* Rounded sliders */
-  .slider.round {
+
+#partList input {
+    width: 20px;
+}
+
+#partList input:checked {
+    background-color: #14CC92;
+}
+
+/* Rounded sliders */
+.slider.round {
     border-radius: 34px;
-  }
-  
-  .slider.round:before {
+}
+
+.slider.round:before {
     border-radius: 50%;
-  }
+}
 
 /* CONFIRMATION */
 #confirmation {
@@ -181,8 +191,9 @@ body {
 }
 
 .heigth100 {
-    height: 90vh;
+    min-height: 90vh;
     margin-top: 3vh;
+    margin-bottom: 3vh;
 }
 
 .mb1 {
