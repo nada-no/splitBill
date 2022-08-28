@@ -163,7 +163,7 @@ var sb = {
         //validate input
         let amount = Number.parseInt(sb.amountInp.value);
         let concept = sb.conceptInp.value;
-        if (amount === "" || isNaN(amount)) {
+        if (amount === "" || isNaN(amount) || amount <= 0) {
             sb.errorInp.classList.remove("hidden");
             sb.errorInp.innerHTML = "Please enter a valid amount of money!";
         } else if (concept === "") {
