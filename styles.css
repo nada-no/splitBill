@@ -149,6 +149,10 @@ body {
     background-color: #14CC92;
 }
 
+#errorInp {
+    color: red;
+}
+
 /* Rounded sliders */
 .slider.round {
     border-radius: 34px;

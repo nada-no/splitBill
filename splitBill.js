@@ -66,7 +66,7 @@ var sb = {
                     date: update.payload.date,
                 });
                 //divide the expense between the people
-                let amountPP = update.payload.amount / (update.payload.payees.length+1);
+                let amountPP = update.payload.amount / (update.payload.payees.length + 1);
                 amountPP = Number.parseFloat(amountPP.toFixed(2));
                 let paidFor = {};
                 update.payload.payees.forEach(element => {
@@ -126,6 +126,16 @@ var sb = {
             labelContainer.appendChild(label);
             labelContainer.appendChild(debtsUl);
             sb.results.appendChild(labelContainer);
+
+            //in case there's only 1 person show a message you need at least 2
+            if (sb.participants.length < 2) {
+                let label = document.createElement("p");
+                label.textContent = "Waiting for at least 1 more person to join...";
+                sb.results.appendChild(label);
+                sb.toAddExp.classList.add("hidden");
+            } else {
+                sb.toAddExp.classList.remove("hidden");
+            }
         }
     },
 
@@ -170,9 +180,14 @@ var sb = {
                     if (el.name !== window.webxdc.selfName) payees.push(el.name);
                 });
             } else {
-                sb.payees.forEach(el=>{
-                    if(el.checked) payees.push(el.value);
+                sb.payees.forEach(el => {
+                    if (el.checked) payees.push(el.value);
                 });
+                if (payees.length === 0) {
+                    sb.errorInp.classList.remove("hidden");
+                    sb.errorInp.innerHTML = "Please select at least 1 payer";
+                    return false;
+                }
             }
             //send an update
             window.webxdc.sendUpdate(
@@ -226,9 +241,11 @@ var sb = {
 
         //add the participants list
         sb.payees = [];
-        sb.partList.innerHTML="";
+        sb.partList.innerHTML = "";
+        let msg = document.getElementById("particInpMsg");
+
         for (const person of sb.participants) {
-            if(person.name === window.webxdc.selfName) continue;
+            if (person.name === window.webxdc.selfName) continue;
             let div = document.createElement("div");
             div.setAttribute("class", "partListItem")
             let name = document.createElement("p");
@@ -244,7 +261,16 @@ var sb = {
             sb.partList.appendChild(div);
         }
         sb.particInp.checked = true;
-        sb.payees.forEach((el)=>{
+        sb.particInp.onchange = () => {
+            if (sb.particInp.checked) {
+                msg.textContent = "Everybody pays";
+                sb.errorInp.classList.add("hidden");
+            } else {
+                msg.textContent = "Please select who pays";
+                sb.errorInp.classList.add("hidden");
+            }
+        };
+        sb.payees.forEach((el) => {
             el.checked = false;
         });
         sb.partList.classList.add("hidden");
@@ -277,7 +303,7 @@ var sb = {
                 let confYes = document.querySelector("#confYes");
                 let confNo = document.querySelector("#confYes");
                 let dateString = new Date(exp.date);
-                let amount = exp.amount / (exp.participants.length +1 );
+                let amount = exp.amount / (exp.participants.length + 1);
 
 
                 //create the expense "header"
