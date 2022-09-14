@@ -10,7 +10,7 @@
 
 <body>
   <div class="centered">
-    <div id="appContainer" class="bgOrange rounded padding10 heigth100">
+    <div id="appContainer" class="bgOrange padding10">
       <!-- LOADING PAGE -->
       <div id="home">
         <!-- <button id="join">View expenses</button> -->
@@ -19,9 +19,9 @@
       </div>
       <!-- RESULTS PAGE -->
       <div id="resultsView">
+        <div id="results"></div>
         <button id="toExpList" class="centered mb3">View all expenses</button>
         <button id="toAddExp" class="centered mb3">Add expense</button>
-        <div id="results"></div>
       </div>
       <!-- ADD EXPENSE PAGE -->
       <div id="addExpenseView">
@@ -62,8 +62,8 @@
         <div id="expensesList"></div>
         <div id="confirmation" class="hidden">
           <h3>Do you really want to delete this expense?</h3>
-          <button id="confYes">Yes</button>
-          <button id="confNo">No</button>
+          <button id="confYes" class="centered mb3">Yes</button>
+          <button id="confNo" class="centered mb3">No</button>
         </div>
       </div>
     </div>

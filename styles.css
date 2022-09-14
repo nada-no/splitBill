@@ -1,4 +1,11 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
 body>div {
+    height: 100%;
     max-width: 800px;
 }
 
@@ -7,6 +14,12 @@ body {
     padding: 0;
     font-family: 'DM Sans', Helvetica, sans-serif;
     color: white;
+    background-color: #333333;
+}
+
+#appContainer {
+    box-shadow: 0px 0px 3px 2px black;
+    min-height: 100%;
 }
 
 /* HOME */
@@ -95,15 +108,15 @@ body {
     display: inline-block;
     width: 60px;
     height: 34px;
-  }
-  
-  .switch input { 
+}
+
+.switch input {
     opacity: 0;
     width: 0;
     height: 0;
-  }
-  
-  .slider {
+}
+
+.slider {
     position: absolute;
     cursor: pointer;
     top: 0;
@@ -113,9 +126,9 @@ body {
     background-color: #ccc;
     -webkit-transition: .4s;
     transition: .4s;
-  }
-  
-  .slider:before {
+}
+
+.slider:before {
     position: absolute;
     content: "";
     height: 26px;
@@ -125,21 +138,21 @@ body {
     background-color: white;
     -webkit-transition: .4s;
     transition: .4s;
-  }
-  
-  input:checked + .slider {
+}
+
+input:checked+.slider {
     background-color: #14CC92;
-  }
-  
-  input:focus + .slider {
+}
+
+input:focus+.slider {
     box-shadow: 0 0 1px #14CC92;
-  }
-  
-  input:checked + .slider:before {
+}
+
+input:checked+.slider:before {
     -webkit-transform: translateX(26px);
     -ms-transform: translateX(26px);
     transform: translateX(26px);
-  }
+}
 
 #partList input {
     width: 20px;
@@ -169,6 +182,15 @@ body {
     right: 0;
     width: 100%;
     height: 100%;
+    background-color: #333333;
+    text-align: center;
+}
+
+#confirmation * {
+    max-width: 800px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* GENERAL STYLES */
@@ -196,8 +218,8 @@ body {
 
 .heigth100 {
     min-height: 90vh;
-    margin-top: 3vh;
-    margin-bottom: 3vh;
+    /* margin-top: 3vh;
+    margin-bottom: 3vh; */
 }
 
 .mb1 {
@@ -234,10 +256,18 @@ body {
     padding-left: 20px;
 }
 
+.expense>* {
+    display: inline-block;
+    overflow: hidden;
+    width: 22%;
+    text-align: center;
+}
+
 .expense span {
     position: relative;
     top: 15px;
     cursor: pointer;
+    text-align: right;
 }
 
 .details {

@@ -19,6 +19,7 @@ var sb = {
     results: null,
     debts: [],
     expenses: [],
+    searchHelper: {},
 
 
     //setup the app
@@ -161,9 +162,9 @@ var sb = {
     //add expense
     addExp: () => {
         //validate input
-        let amount = Number.parseInt(sb.amountInp.value);
+        let amount = Number.parseFloat(sb.amountInp.value);
         let concept = sb.conceptInp.value;
-        if (amount === "" || isNaN(amount) || amount <= 0) {
+        if (isNaN(amount) || !isFinite(amount) || amount <= 0) {
             sb.errorInp.classList.remove("hidden");
             sb.errorInp.innerHTML = "Please enter a valid amount of money!";
         } else if (concept === "") {
@@ -206,6 +207,26 @@ var sb = {
             );
             sb.list();
         }
+    },
+
+    //delete expense
+    deleteExp: () => {
+        let info = "";
+        window.webxdc.sendUpdate(
+            {
+                payload: {
+                    date: Number.parseInt(sb.searchHelper.date),
+                    type: "deletion",
+                    concept: sb.searchHelper.concept,
+                },
+                info
+            },
+            info
+        );
+        sb.list();
+
+        //reset searchHelper
+        sb.searchHelper = {};
     },
 
     //open add expense screen
@@ -301,7 +322,7 @@ var sb = {
                 let deleteBtn = document.createElement("button");
                 let confirmation = document.querySelector("#confirmation");
                 let confYes = document.querySelector("#confYes");
-                let confNo = document.querySelector("#confYes");
+                let confNo = document.querySelector("#confNo");
                 let dateString = new Date(exp.date);
                 let amount = exp.amount / (exp.participants.length + 1);
 
@@ -312,7 +333,7 @@ var sb = {
                 date.textContent = dateString.getDate() + "/" + dateString.getMonth() + "/" + dateString.getFullYear();
                 conc.textContent = exp.concept;
                 amt.textContent = exp.amount + "€";
-                arrow.setAttribute("id-data", exp.date);
+                // arrow.setAttribute("id-data", exp.date);
                 arrow.innerHTML = "<svg id='i-chevron-bottom' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='20' height='20' fill='none' stroke='currentcolor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'><path d='M30 12 L16 24 2 12' /></svg>";
                 arrow.onclick = (ev) => {
                     if (ev.currentTarget.parentElement.nextSibling.classList.contains("hidden")) {
@@ -333,27 +354,26 @@ var sb = {
                 }
                 //append the buttons and the confirmation dialog
                 deleteBtn.innerHTML = "Delete Expense";
-                deleteBtn.onclick = () => {
-
-
-                    window.webxdc.sendUpdate(
-                        {
-                            payload: {
-                                deleter: window.webxdc.selfName,
-                                type: "deletion",
-                                concept: exp.concept,
-                                amount: amount,
-                                date: exp.date,
-                            }
-
-                        }
-
-                    );
+                deleteBtn.setAttribute("id-data", exp.date);
+                deleteBtn.setAttribute("concept", exp.concept);
+                deleteBtn.onclick = (event) => {
+                    sb.searchHelper.date = event.target.getAttribute("id-data");
+                    sb.searchHelper.concept = event.target.getAttribute("concept");
+                    confirmation.classList.remove("hidden");
+                };
+                //confirmation button
+                confYes.onclick = () => {
+                    sb.deleteExp();
+                    confirmation.classList.add("hidden");
+                };
+                //cancel button
+                confNo.onclick = () => {
+                    confirmation.classList.add("hidden");
+                    sb.searchHelper = {};
                 };
                 details.classList.add("m2");
                 details.appendChild(deleteBtn);
                 details.classList.add("hidden");
-
 
                 //append all the elements
                 div.appendChild(date);
