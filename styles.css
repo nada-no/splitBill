@@ -42,7 +42,8 @@ body {
 
 /* ADD EXPENSE VIEW */
 #closeExpVw,
-#closeExpListVw {
+#closeExpListVw,
+#closeSettleUpVw {
     float: right;
     display: block;
     cursor: pointer;
@@ -193,6 +194,13 @@ input:checked+.slider:before {
     margin-right: auto;
 }
 
+/* SETTLE UP VIEW  */
+.btnSmall {
+    display: inline-block;
+    width: 20%;
+    margin-right: 40px;
+}
+
 /* GENERAL STYLES */
 .centered {
     display: block;
@@ -220,6 +228,10 @@ input:checked+.slider:before {
     min-height: 90vh;
     /* margin-top: 3vh;
     margin-bottom: 3vh; */
+}
+
+.inlineB {
+    display: inline-block;
 }
 
 .mb1 {

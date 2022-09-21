@@ -4,11 +4,14 @@ var sb = {
     addExpVw: null,
     resultsVw: null,
     homeVw: null,
+    settleUpVw: null,
     expListVw: null,
     closeExpVw: null,
     closeExpListVw: null,
+    closeSettleUpVw: null,
     expList: null,
     partList: null,
+    settleUpList: null,
     conceptInp: null,
     amountInp: null,
     particInp: null,
@@ -16,6 +19,7 @@ var sb = {
     addExpBtn: null,
     toAddExp: null,
     toExpList: null,
+    toSetUp: null,
     results: null,
     debts: [],
     expenses: [],
@@ -36,6 +40,11 @@ var sb = {
         sb.closeExpVw.onclick = sb.list;
         sb.closeExpListVw = document.getElementById("closeExpListVw");
         sb.closeExpListVw.onclick = sb.list;
+        sb.closeSettleUpVw = document.getElementById("closeSettleUpVw");
+        sb.closeSettleUpVw.onclick = sb.list;
+        sb.settleUpVw = document.getElementById("settleUpView");
+        sb.settleUpVw.classList.add("hidden");
+        sb.settleUpList = document.getElementById("settleUpList");
         sb.amountInp = document.getElementById("amount");
         sb.conceptInp = document.getElementById("concept");
         sb.errorInp = document.getElementById("errorInp");
@@ -49,6 +58,8 @@ var sb = {
         sb.addExpBtn.onclick = sb.addExp;
         sb.toAddExp = document.getElementById("toAddExp");
         sb.toAddExp.onclick = sb.openAddExp;
+        sb.toSetUp = document.getElementById("toSetUp");
+        sb.toSetUp.onclick = sb.settleUp;
         sb.toExpList = document.getElementById("toExpList");
         sb.toExpList.onclick = sb.openExpList;
         sb.results = document.getElementById("results");
@@ -119,7 +130,7 @@ var sb = {
                     debt += el[2];
                     let li = document.createElement("li");
                     li.textContent = el[2].toFixed(2) + "€ to " + el[1];
-                    debtsUl.appendChild(li);
+                    if (debt != 0) debtsUl.appendChild(li); //do not append the li element if there's no debts
                 }
             });
 
@@ -162,9 +173,11 @@ var sb = {
     //add expense
     addExp: () => {
         //validate input
-        let amount = Number.parseFloat(sb.amountInp.value);
+        let amount = sb.amountInp.value;
         let concept = sb.conceptInp.value;
-        if (isNaN(amount) || !isFinite(amount) || amount <= 0) {
+
+        // if (isNaN(amount) || !isFinite(amount) || amount <= 0) {
+        if (!/^\d+((\.|,)\d+)*$/.test(amount) || Number.parseFloat(amount.replace(/,/g, '.')) <= 0) {
             sb.errorInp.classList.remove("hidden");
             sb.errorInp.innerHTML = "Please enter a valid amount of money!";
         } else if (concept === "") {
@@ -172,6 +185,9 @@ var sb = {
             sb.errorInp.innerHTML = "Please enter a concept!";
         } else {
             sb.errorInp.classList.add("hidden");
+
+            amount = amount.replace(/,/g, '.'); //transform commas in '.'
+            amount = Number.parseFloat(amount);
 
             let info = window.webxdc.selfName + " added a " + amount + "€ expense";
             let payees = [];
@@ -227,6 +243,51 @@ var sb = {
 
         //reset searchHelper
         sb.searchHelper = {};
+    },
+
+    //settle up and remove all your debts
+    settleUp: () => {
+        //display the view
+        sb.hideAll();
+        sb.settleUpVw.classList.remove("hidden");
+        sb.settleUpList.innerHTML = "";
+
+        //get the debts
+        let debts = simplifyDebts(sb.debts);
+        console.log(debts);
+        //create and append the buttons
+        debts.forEach(el => {
+            if (el[1] === window.webxdc.selfName) {
+                let button = document.createElement("button");
+                button.classList.add("btnSmall");
+                button.textContent = el[0];
+                button.onclick = () => {
+                    let info = window.webxdc.selfName + " settled up with " + el[0];
+                    //send an update
+                    window.webxdc.sendUpdate(
+                        {
+                            payload: {
+                                payer: el[0],
+                                type: "expense",
+                                concept: info,
+                                amount: el[2] * 2,
+                                payees: [window.webxdc.selfName],
+                                date: Date.now(),
+                            },
+                            info
+                        },
+                        info
+                    );
+                    sb.list();
+                };
+                sb.settleUpList.appendChild(button);
+                let debtAdvice = document.createElement("p");
+                debtAdvice.classList.add("inlineB");
+                debtAdvice.textContent = "owes you " + el[2].toFixed(2) + "€";
+                sb.settleUpList.appendChild(debtAdvice);
+                sb.settleUpList.appendChild(document.createElement("br"));
+            }
+        });
     },
 
     //open add expense screen
@@ -353,14 +414,14 @@ var sb = {
                     details.appendChild(participant);
                 }
                 //append the buttons and the confirmation dialog
-                deleteBtn.innerHTML = "Delete Expense";
-                deleteBtn.setAttribute("id-data", exp.date);
-                deleteBtn.setAttribute("concept", exp.concept);
-                deleteBtn.onclick = (event) => {
-                    sb.searchHelper.date = event.target.getAttribute("id-data");
-                    sb.searchHelper.concept = event.target.getAttribute("concept");
-                    confirmation.classList.remove("hidden");
-                };
+                // deleteBtn.innerHTML = "Delete Expense";
+                // deleteBtn.setAttribute("id-data", exp.date);
+                // deleteBtn.setAttribute("concept", exp.concept);
+                // deleteBtn.onclick = (event) => {
+                //     sb.searchHelper.date = event.target.getAttribute("id-data");
+                //     sb.searchHelper.concept = event.target.getAttribute("concept");
+                //     confirmation.classList.remove("hidden");
+                // };
                 //confirmation button
                 confYes.onclick = () => {
                     sb.deleteExp();
@@ -372,7 +433,7 @@ var sb = {
                     sb.searchHelper = {};
                 };
                 details.classList.add("m2");
-                details.appendChild(deleteBtn);
+                // details.appendChild(deleteBtn);
                 details.classList.add("hidden");
 
                 //append all the elements
@@ -394,6 +455,7 @@ var sb = {
         sb.resultsVw.classList.add("hidden");
         sb.addExpVw.classList.add("hidden");
         sb.expListVw.classList.add("hidden");
+        sb.settleUpVw.classList.add("hidden");
     },
 
 };

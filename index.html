@@ -19,9 +19,10 @@
       </div>
       <!-- RESULTS PAGE -->
       <div id="resultsView">
-        <div id="results"></div>
         <button id="toExpList" class="centered mb3">View all expenses</button>
         <button id="toAddExp" class="centered mb3">Add expense</button>
+        <button id="toSetUp" class="centered mb3">Settle up</button>
+        <div id="results"></div>
       </div>
       <!-- ADD EXPENSE PAGE -->
       <div id="addExpenseView">
@@ -60,11 +61,23 @@
             </svg></span>
         </div>
         <div id="expensesList"></div>
-        <div id="confirmation" class="hidden">
+        <!-- <div id="confirmation" class="hidden">
           <h3>Do you really want to delete this expense?</h3>
           <button id="confYes" class="centered mb3">Yes</button>
           <button id="confNo" class="centered mb3">No</button>
+        </div> -->
+      </div>
+      <!-- SETTLE UP PAGE -->
+      <div id="settleUpView">
+        <div class="mb3">
+          <span id="closeSettleUpVw"><svg id='i-close' viewBox='0 0 32 32' width='20' height='20' fill='none'
+              stroke='currentcolor' stroke-linecap='round' stroke-linejoin='round' stroke-width='4'>
+              <path d='M2 30 L30 2 M30 30 L2 2' />
+            </svg></span>
         </div>
+        <p>Select a user to settle up</p>
+        <div id="settleUpList"></div>
+      </div>
       </div>
     </div>
   </div>
