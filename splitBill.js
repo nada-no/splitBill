@@ -78,7 +78,9 @@ var sb = {
                     date: update.payload.date,
                 });
                 //divide the expense between the people
-                let amountPP = update.payload.amount / (update.payload.payees.length + 1);
+                let amountPP;
+                //check if it is a settle up or a regular expense
+                update.payload.settle ?  amountPP = update.payload.amount : amountPP = update.payload.amount / (update.payload.payees.length + 1);
                 amountPP = Number.parseFloat(amountPP.toFixed(2));
                 let paidFor = {};
                 update.payload.payees.forEach(element => {
@@ -90,6 +92,7 @@ var sb = {
                     paidBy: update.payload.payer,
                     paidFor: paidFor,
                 });
+
             } else if (update.payload.type == "deletion") { //  EXPENSE DELETION
                 //delete expense
                 let index = sb.expenses.findIndex((obj) => {
@@ -130,7 +133,7 @@ var sb = {
                     debt += el[2];
                     let li = document.createElement("li");
                     li.textContent = el[2].toFixed(2) + "€ to " + el[1];
-                    if (debt != 0) debtsUl.appendChild(li); //do not append the li element if there's no debts
+                    if (debt != 0 && el[2] != 0) debtsUl.appendChild(li); //do not append the li element if there's no debts
                 }
             });
 
@@ -269,8 +272,9 @@ var sb = {
                             payload: {
                                 payer: el[0],
                                 type: "expense",
+                                settle: true,
                                 concept: info,
-                                amount: el[2] * 2,
+                                amount: el[2],
                                 payees: [window.webxdc.selfName],
                                 date: Date.now(),
                             },
@@ -374,6 +378,7 @@ var sb = {
             for (const exp of sb.expenses) {
                 //create elements
                 let expense = document.createElement("div");
+                let payer = document.createElement("p");
                 let div = document.createElement("div");
                 let amt = document.createElement("p");
                 let conc = document.createElement("p");
@@ -382,8 +387,8 @@ var sb = {
                 let details = document.createElement("div");
                 let deleteBtn = document.createElement("button");
                 let confirmation = document.querySelector("#confirmation");
-                let confYes = document.querySelector("#confYes");
-                let confNo = document.querySelector("#confNo");
+                // let confYes = document.querySelector("#confYes");
+                // let confNo = document.querySelector("#confNo");
                 let dateString = new Date(exp.date);
                 let amount = exp.amount / (exp.participants.length + 1);
 
@@ -407,7 +412,10 @@ var sb = {
 
                 };
 
-                //append the details
+                //append the payer to the details
+                payer.textContent = exp.payer + " payed " + exp.amount + "€";
+                details.appendChild(payer);
+                //then append the payees to the details
                 for (const part of exp.participants) {
                     let participant = document.createElement("p");
                     participant.textContent = part + " owes " + amount.toFixed(2) + "€ to " + exp.payer;
@@ -423,15 +431,15 @@ var sb = {
                 //     confirmation.classList.remove("hidden");
                 // };
                 //confirmation button
-                confYes.onclick = () => {
-                    sb.deleteExp();
-                    confirmation.classList.add("hidden");
-                };
-                //cancel button
-                confNo.onclick = () => {
-                    confirmation.classList.add("hidden");
-                    sb.searchHelper = {};
-                };
+                // confYes.onclick = () => {
+                //     sb.deleteExp();
+                //     confirmation.classList.add("hidden");
+                // };
+                // //cancel button
+                // confNo.onclick = () => {
+                //     confirmation.classList.add("hidden");
+                //     sb.searchHelper = {};
+                // };
                 details.classList.add("m2");
                 // details.appendChild(deleteBtn);
                 details.classList.add("hidden");

@@ -63,7 +63,6 @@ function simplifyDebts(transactions) {
 
         transaction_map.set(minMax[0], transaction_map.get(minMax[0]) + min_value);
         transaction_map.set(minMax[1], transaction_map.get(minMax[1]) - min_value);
-        // console.log(min_value);
         let res = [minMax[0], minMax[1], min_value];
         splits.push(res);
         helper();
