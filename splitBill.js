@@ -76,11 +76,12 @@ var sb = {
                     amount: update.payload.amount,
                     participants: update.payload.payees,
                     date: update.payload.date,
+                    settle: update.payload.settle
                 });
                 //divide the expense between the people
                 let amountPP;
                 //check if it is a settle up or a regular expense
-                update.payload.settle ?  amountPP = update.payload.amount : amountPP = update.payload.amount / (update.payload.payees.length + 1);
+                update.payload.settle ? amountPP = update.payload.amount : amountPP = update.payload.amount / (update.payload.payees.length + 1);
                 amountPP = Number.parseFloat(amountPP.toFixed(2));
                 let paidFor = {};
                 update.payload.payees.forEach(element => {
@@ -116,16 +117,36 @@ var sb = {
         //close the other views
         sb.hideAll();
         sb.resultsVw.classList.remove("hidden");
+        sb.results.innerHTML = "";
+
+        //get debts 
+        let debts = simplifyDebts(sb.debts);
+
+        //show user's balance
+        let balance = document.createElement("h2");
+        let bNum = 0;
+        debts.forEach(el => {
+            if (el[0] === window.webxdc.selfName) {
+                bNum -= el[2];
+            }
+            if (el[1] === window.webxdc.selfName) {
+                bNum += el[2];
+            }
+        });
+        if (bNum > 0) {
+            balance.innerHTML = "You are owed <span class='green'>" + bNum.toFixed(2) + "</span>€";
+        } else {
+            balance.innerHTML = "You owe <span class='red'>" + (bNum * -1).toFixed(2) + "</span>€";
+        }
+        sb.results.appendChild(balance);
+
 
         //list debts
-        sb.results.innerHTML = "";
         for (const person of sb.participants) {
             let labelContainer = document.createElement("div");
             let label = document.createElement("p");
             let debtsUl = document.createElement("ul");
-
             let debt = 0;
-            let debts = simplifyDebts(sb.debts);
 
             //CALCULATING DEBTS
             debts.forEach(el => {
@@ -133,12 +154,12 @@ var sb = {
                     debt += el[2];
                     let li = document.createElement("li");
                     li.textContent = el[2].toFixed(2) + "€ to " + el[1];
-                    if (debt != 0 && el[2] != 0) debtsUl.appendChild(li); //do not append the li element if there's no debts
+                    if (el[2] != 0) debtsUl.appendChild(li); //do not append the li element if there's no debts
                 }
             });
 
             label.textContent = person.name + " owes " + debt.toFixed(2) + " in total.";
-            labelContainer.appendChild(label);
+            if (debt != 0) labelContainer.appendChild(label); //do not append the person if he has no debts
             labelContainer.appendChild(debtsUl);
             sb.results.appendChild(labelContainer);
 
@@ -219,6 +240,7 @@ var sb = {
                         amount: amount,
                         payees: payees,
                         date: Date.now(),
+                        settle: false
                     },
                     info
                 },
@@ -398,7 +420,7 @@ var sb = {
                 details.classList.add("details");
                 date.textContent = dateString.getDate() + "/" + dateString.getMonth() + "/" + dateString.getFullYear();
                 conc.textContent = exp.concept;
-                amt.textContent = exp.amount + "€";
+                amt.textContent = exp.amount.toFixed(2) + "€";
                 // arrow.setAttribute("id-data", exp.date);
                 arrow.innerHTML = "<svg id='i-chevron-bottom' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='20' height='20' fill='none' stroke='currentcolor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'><path d='M30 12 L16 24 2 12' /></svg>";
                 arrow.onclick = (ev) => {
@@ -412,14 +434,20 @@ var sb = {
 
                 };
 
-                //append the payer to the details
-                payer.textContent = exp.payer + " payed " + exp.amount + "€";
-                details.appendChild(payer);
-                //then append the payees to the details
-                for (const part of exp.participants) {
-                    let participant = document.createElement("p");
-                    participant.textContent = part + " owes " + amount.toFixed(2) + "€ to " + exp.payer;
-                    details.appendChild(participant);
+                if (!exp.settle) {
+                    //append the payer to the details
+                    payer.textContent = exp.payer + " payed " + exp.amount.toFixed(2) + "€";
+                    details.appendChild(payer);
+                    //then append the payees to the details
+                    for (const part of exp.participants) {
+                        let participant = document.createElement("p");
+                        participant.textContent = part + " owes " + amount.toFixed(2) + "€ to " + exp.payer;
+                        details.appendChild(participant);
+                    }
+                } else {
+                     //append the payer to the details
+                     payer.textContent = exp.payer + " payed " + exp.amount.toFixed(2) + "€ to " + exp.participants[0];
+                     details.appendChild(payer);
                 }
                 //append the buttons and the confirmation dialog
                 // deleteBtn.innerHTML = "Delete Expense";
