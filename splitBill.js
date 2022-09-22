@@ -279,7 +279,7 @@ var sb = {
 
         //get the debts
         let debts = simplifyDebts(sb.debts);
-        console.log(debts);
+
         //create and append the buttons
         debts.forEach(el => {
             if (el[1] === window.webxdc.selfName) {
@@ -314,6 +314,14 @@ var sb = {
                 sb.settleUpList.appendChild(document.createElement("br"));
             }
         });
+
+        //append the hint paragraph
+        let hint = document.getElementById("hintSettleUp");
+        if(sb.settleUpList.innerHTML === "") {
+            hint.innerText = "There's no one to settle up with. You can only settle up when somebody owes you money";
+        } else {
+            hint.innerText = "Select a user to settle up";
+        }
     },
 
     //open add expense screen

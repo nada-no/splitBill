@@ -50,7 +50,8 @@ body {
 }
 
 #addExpenseView div,
-#allExpensesView div {
+#allExpensesView div,
+#settleUpView div {
     min-height: 20px;
 }
 
