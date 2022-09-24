@@ -197,8 +197,8 @@ var sb = {
     //add expense
     addExp: () => {
         //validate input
-        let amount = sb.amountInp.value;
-        let concept = sb.conceptInp.value;
+        let amount = sb.amountInp.value.trim();
+        let concept = sb.conceptInp.value.trim();
 
         // if (isNaN(amount) || !isFinite(amount) || amount <= 0) {
         if (!/^\d+((\.|,)\d+)*$/.test(amount) || Number.parseFloat(amount.replace(/,/g, '.')) <= 0) {
@@ -417,8 +417,8 @@ var sb = {
                 let details = document.createElement("div");
                 let deleteBtn = document.createElement("button");
                 let confirmation = document.querySelector("#confirmation");
-                // let confYes = document.querySelector("#confYes");
-                // let confNo = document.querySelector("#confNo");
+                let confYes = document.querySelector("#confYes");
+                let confNo = document.querySelector("#confNo");
                 let dateString = new Date(exp.date);
                 let amount = exp.amount / (exp.participants.length + 1);
 
@@ -458,26 +458,26 @@ var sb = {
                      details.appendChild(payer);
                 }
                 //append the buttons and the confirmation dialog
-                // deleteBtn.innerHTML = "Delete Expense";
-                // deleteBtn.setAttribute("id-data", exp.date);
-                // deleteBtn.setAttribute("concept", exp.concept);
-                // deleteBtn.onclick = (event) => {
-                //     sb.searchHelper.date = event.target.getAttribute("id-data");
-                //     sb.searchHelper.concept = event.target.getAttribute("concept");
-                //     confirmation.classList.remove("hidden");
-                // };
-                //confirmation button
-                // confYes.onclick = () => {
-                //     sb.deleteExp();
-                //     confirmation.classList.add("hidden");
-                // };
-                // //cancel button
-                // confNo.onclick = () => {
-                //     confirmation.classList.add("hidden");
-                //     sb.searchHelper = {};
-                // };
+                deleteBtn.innerHTML = "Delete Expense";
+                deleteBtn.setAttribute("id-data", exp.date);
+                deleteBtn.setAttribute("concept", exp.concept);
+                deleteBtn.onclick = (event) => {
+                    sb.searchHelper.date = event.target.getAttribute("id-data");
+                    sb.searchHelper.concept = event.target.getAttribute("concept");
+                    confirmation.classList.remove("hidden");
+                };
+                // confirmation button
+                confYes.onclick = () => {
+                    sb.deleteExp();
+                    confirmation.classList.add("hidden");
+                };
+                //cancel button
+                confNo.onclick = () => {
+                    confirmation.classList.add("hidden");
+                    sb.searchHelper = {};
+                };
                 details.classList.add("m2");
-                // details.appendChild(deleteBtn);
+                details.appendChild(deleteBtn);
                 details.classList.add("hidden");
 
                 //append all the elements
