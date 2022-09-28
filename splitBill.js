@@ -50,9 +50,9 @@ var sb = {
         sb.errorInp = document.getElementById("errorInp");
         sb.errorInp.classList.add("hidden");
         sb.particInp = document.getElementById("particInp");
-        sb.particInp.onclick = () => {
-            sb.partList.classList.contains("hidden") ? sb.partList.classList.remove("hidden") : sb.partList.classList.add("hidden");
-        };
+        // sb.particInp.onclick = () => {
+        //     sb.partList.classList.contains("hidden") ? sb.partList.classList.remove("hidden") : sb.partList.classList.add("hidden");
+        // };
         sb.partList = document.getElementById("partList");
         sb.addExpBtn = document.getElementById("addExpBtn");
         sb.addExpBtn.onclick = sb.addExp;
@@ -70,7 +70,7 @@ var sb = {
                 sb.participants.push({ name: update.payload.name, debts: {}, paid: 0 });
             } else if (update.payload.type === "expense") { // EXPENSE ADDITION
                 //store the expense
-                sb.expenses.push({
+                sb.expenses.unshift({
                     payer: update.payload.payer,
                     concept: update.payload.concept,
                     amount: update.payload.amount,
@@ -95,11 +95,11 @@ var sb = {
                 });
 
             } else if (update.payload.type == "deletion") { //  EXPENSE DELETION
-                //delete expense
+                //delete expense (crossed out text)
                 let index = sb.expenses.findIndex((obj) => {
                     return obj.date === update.payload.date && obj.concept === update.payload.concept;
                 });
-                if (index != -1) sb.expenses.splice(index, 1);
+                if (index != -1) sb.expenses[index].del = update.payload.user;
                 //delete debts
                 index = sb.debts.findIndex((obj) => {
                     return obj.date === update.payload.date && obj.concept === update.payload.concept;
@@ -200,7 +200,6 @@ var sb = {
         let amount = sb.amountInp.value.trim();
         let concept = sb.conceptInp.value.trim();
 
-        // if (isNaN(amount) || !isFinite(amount) || amount <= 0) {
         if (!/^\d+((\.|,)\d+)*$/.test(amount) || Number.parseFloat(amount.replace(/,/g, '.')) <= 0) {
             sb.errorInp.classList.remove("hidden");
             sb.errorInp.innerHTML = "Please enter a valid amount of money!";
@@ -213,7 +212,7 @@ var sb = {
             amount = amount.replace(/,/g, '.'); //transform commas in '.'
             amount = Number.parseFloat(amount);
 
-            let info = window.webxdc.selfName + " added a " + amount + "€ expense";
+            let info = window.webxdc.selfName + " added a " + amount + "€ expense: " + concept;
             let payees = [];
             //split between everybody or only some people?
             if (sb.particInp.checked) {
@@ -252,10 +251,11 @@ var sb = {
 
     //delete expense
     deleteExp: () => {
-        let info = "";
+        let info = window.webxdc.selfName + ' deleted the expense "' + sb.searchHelper.concept + '"';
         window.webxdc.sendUpdate(
             {
                 payload: {
+                    user: window.webxdc.selfName,
                     date: Number.parseInt(sb.searchHelper.date),
                     type: "deletion",
                     concept: sb.searchHelper.concept,
@@ -317,7 +317,7 @@ var sb = {
 
         //append the hint paragraph
         let hint = document.getElementById("hintSettleUp");
-        if(sb.settleUpList.innerHTML === "") {
+        if (sb.settleUpList.innerHTML === "") {
             hint.innerText = "There's no one to settle up with. You can only settle up when somebody owes you money";
         } else {
             hint.innerText = "Select a user to settle up";
@@ -328,6 +328,7 @@ var sb = {
     openAddExp: () => {
         sb.resultsVw.classList.add("hidden");
         sb.addExpVw.classList.remove("hidden");
+        sb.errorInp.classList.add("hidden");
         //clear the inputs and add animations
         sb.amountInp.value = "";
         sb.conceptInp.value = "";
@@ -359,6 +360,8 @@ var sb = {
         sb.payees = [];
         sb.partList.innerHTML = "";
         let msg = document.getElementById("particInpMsg");
+        sb.particInp.checked = false;
+
 
         for (const person of sb.participants) {
             if (person.name === window.webxdc.selfName) continue;
@@ -368,28 +371,42 @@ var sb = {
             let check = document.createElement("input");
 
             name.textContent = person.name;
-            div.appendChild(name);
 
             check.setAttribute("type", "checkbox");
             check.setAttribute("value", person.name);
+            check.onchange = (el) => {
+                if (!el.checked) {
+                    sb.particInp.checked = false;
+                    msg.textContent = "Please select who pays";
+                }
+            };
             sb.payees.push(check); //add to the payees array to check if checked in the future
             div.appendChild(check);
+            div.appendChild(name);
+
             sb.partList.appendChild(div);
         }
-        sb.particInp.checked = true;
-        sb.particInp.onchange = () => {
-            if (sb.particInp.checked) {
-                msg.textContent = "Everybody pays";
-                sb.errorInp.classList.add("hidden");
-            } else {
-                msg.textContent = "Please select who pays";
-                sb.errorInp.classList.add("hidden");
-            }
-        };
+        //everyone not selected by default
         sb.payees.forEach((el) => {
             el.checked = false;
         });
-        sb.partList.classList.add("hidden");
+
+        // sb.particInp.checked = false;
+        sb.particInp.onchange = () => {
+            if (sb.particInp.checked) {
+                msg.textContent = "Everyone selected";
+                sb.errorInp.classList.add("hidden");
+                sb.payees.forEach((el) => {
+                    el.checked = true;
+                });
+            } else {
+                msg.textContent = "Please select who pays";
+                // sb.errorInp.classList.add("hidden");
+                sb.payees.forEach((el) => {
+                    el.checked = false;
+                });
+            }
+        };
     },
 
     //open and display exp list
@@ -426,9 +443,16 @@ var sb = {
                 //create the expense "header"
                 div.classList.add("expense");
                 details.classList.add("details");
-                date.textContent = dateString.getDate() + "/" + dateString.getMonth() + "/" + dateString.getFullYear();
-                conc.textContent = exp.concept;
-                amt.textContent = exp.amount.toFixed(2) + "€";
+                //check if the expense is deleted
+                if (exp.del) {
+                    date.innerHTML = "<del>" + dateString.getDate() + "/" + dateString.getMonth() + "/" + dateString.getFullYear()%100 + "</del>";
+                    conc.innerHTML = "<del>" + exp.concept + "</del>";
+                    amt.innerHTML = "<del>" + exp.amount.toFixed(2) + "€</del>";
+                } else {
+                    date.textContent = dateString.getDate() + "/" + dateString.getMonth() + "/" + dateString.getFullYear()%100;
+                    conc.textContent = exp.concept;
+                    amt.textContent = exp.amount.toFixed(2) + "€";
+                }
                 // arrow.setAttribute("id-data", exp.date);
                 arrow.innerHTML = "<svg id='i-chevron-bottom' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='20' height='20' fill='none' stroke='currentcolor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'><path d='M30 12 L16 24 2 12' /></svg>";
                 arrow.onclick = (ev) => {
@@ -453,9 +477,9 @@ var sb = {
                         details.appendChild(participant);
                     }
                 } else {
-                     //append the payer to the details
-                     payer.textContent = exp.payer + " payed " + exp.amount.toFixed(2) + "€ to " + exp.participants[0];
-                     details.appendChild(payer);
+                    //append the payer to the details
+                    payer.textContent = exp.payer + " payed " + exp.amount.toFixed(2) + "€ to " + exp.participants[0];
+                    details.appendChild(payer);
                 }
                 //append the buttons and the confirmation dialog
                 deleteBtn.innerHTML = "Delete Expense";
@@ -464,6 +488,7 @@ var sb = {
                 deleteBtn.onclick = (event) => {
                     sb.searchHelper.date = event.target.getAttribute("id-data");
                     sb.searchHelper.concept = event.target.getAttribute("concept");
+                    sb.hideAll();
                     confirmation.classList.remove("hidden");
                 };
                 // confirmation button
@@ -474,10 +499,19 @@ var sb = {
                 //cancel button
                 confNo.onclick = () => {
                     confirmation.classList.add("hidden");
+                    sb.openExpList();
                     sb.searchHelper = {};
                 };
                 details.classList.add("m2");
-                details.appendChild(deleteBtn);
+                //if the expense is not deleted append delete button
+                if (!exp.del) {
+                    details.appendChild(deleteBtn);
+                } else {
+                    let deleter = document.createElement("p");
+                    deleter.textContent = "This expense was deleted by " + exp.del;
+                    deleter.classList.add("error");
+                    details.appendChild(deleter);
+                }
                 details.classList.add("hidden");
 
                 //append all the elements

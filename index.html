@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Hello</title>
+  <title>SplitBill</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width" />
   <link rel="stylesheet" href="styles.css" />
@@ -40,15 +40,15 @@
           <input type="text" id="concept" name="concept" class="mb3" />
         </fieldset>
 
-        <p id="particInpMsg">Everybody pays</p>
+        <p id="particInpMsg">Switch to select everyone</p>
         <label class="switch mb3">
-          <input type="checkbox" id="particInp" name="particInp" checked>
+          <input type="checkbox" id="particInp" name="particInp">
           <span class="slider round"></span>
         </label>
 
         <div id="partList"></div>
 
-        <p id="errorInp"></p>
+        <p id="errorInp" class="error"></p>
         <button id="addExpBtn">calculate</button>
       </div>
       <!-- ALL EXPENSES PAGE -->
@@ -60,11 +60,6 @@
             </svg></span>
         </div>
         <div id="expensesList"></div>
-        <div id="confirmation" class="hidden">
-          <h3>Do you really want to delete this expense?</h3>
-          <button id="confYes" class="centered mb3">Yes</button>
-          <button id="confNo" class="centered mb3">No</button>
-        </div>
       </div>
       <!-- SETTLE UP PAGE -->
       <div id="settleUpView">
@@ -77,8 +72,13 @@
         <p id="hintSettleUp"></p>
         <div id="settleUpList"></div>
       </div>
+      <div id="confirmation" class="hidden">
+        <h3>Do you really want to delete this expense?</h3>
+        <button id="confYes" class="centered mb3">Yes</button>
+        <button id="confNo" class="centered mb3">No</button>
       </div>
     </div>
+  </div>
   </div>
   <script src="webxdc.js"></script>
   <script src="calculations.js"></script>
